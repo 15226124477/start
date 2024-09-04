@@ -1,7 +1,7 @@
 github.com/15226124477/define v0.0.0-20240904090259-ef1913ec436a h1:6Z9Pk1AahJDFvPNTzxPwXRiGFdBi+1Tq2EDstc5YvqI=
 github.com/15226124477/define v0.0.0-20240904090259-ef1913ec436a/go.mod h1:eWHClafAf49vElyhKijmUNBv9pkigvZUUsAYyi5fIVY=
-github.com/15226124477/method v0.0.0-20240904083959-95e7ce9ae779 h1:yDtCsgyLkzykZhgQatUOp4Gaksq8+Gyp0wpNoYWkGhI=
-github.com/15226124477/method v0.0.0-20240904083959-95e7ce9ae779/go.mod h1:mCZvd8F7yW048oqQa0DcnIpgRM+EFP3/7v3Z77bnRmQ=
+github.com/15226124477/method v0.0.0-20240904094333-acb1369fe20e h1:LvWSNsxJW6RtILRtDObhsmsk2VTp1zXhNkNLN77qs60=
+github.com/15226124477/method v0.0.0-20240904094333-acb1369fe20e/go.mod h1:mCZvd8F7yW048oqQa0DcnIpgRM+EFP3/7v3Z77bnRmQ=
 github.com/bytedance/sonic v1.11.6 h1:oUp34TzMlL+OY1OUWxHqsdkgC/Zfc85zGqw9siXjrc0=
 github.com/bytedance/sonic v1.11.6/go.mod h1:LysEHSvpvDySVdC2f87zGWf6CIKJcAvqab1ZaiQtds4=
 github.com/bytedance/sonic/loader v0.1.1 h1:c+e5Pt1k/cy5wMveRDyk2X4B9hF4g7an8N3zCYjJFNM=

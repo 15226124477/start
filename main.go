@@ -125,7 +125,6 @@ func RotateLogs(mode int, isLive bool) *rotatelogs.RotateLogs {
 	if isLive {
 		go func() {
 			LiveServer()
-
 		}()
 	}
 

@@ -6,6 +6,7 @@ require (
 	github.com/15226124477/define v0.0.0-20240904090259-ef1913ec436a
 	github.com/15226124477/method v0.0.0-20240904094333-acb1369fe20e
 	github.com/fatih/color v1.17.0
+	github.com/gorilla/websocket v1.5.3
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
 	github.com/sirupsen/logrus v1.9.3

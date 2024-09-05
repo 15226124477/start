@@ -5,11 +5,13 @@ import (
 	_ "embed"
 	"fmt"
 	"github.com/15226124477/define"
-	"github.com/15226124477/method"
 	"github.com/fatih/color"
+	"github.com/gorilla/websocket"
+	"github.com/hpcloud/tail"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/rifflock/lfshook"
 	log "github.com/sirupsen/logrus"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
@@ -81,6 +83,55 @@ func (f *CustomTextFormatter) PrintColored(entry *log.Entry) {
 	fmt.Fprintln(color.Output, msg) // 使用有颜色的方式打印消息到终端
 }
 
+func LiveServer() {
+	server := "http://172.16.32.244:1024/log"
+	u, err := url.Parse(server)
+	if err != nil {
+		log.Fatal("Error parsing URL:", err)
+	}
+
+	conn, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+	if err != nil {
+		log.Fatal("Error connecting:", err)
+	}
+	defer conn.Close()
+
+	runExe, _ := os.Executable()
+	_, exec := filepath.Split(runExe)
+	filenameWithSuffix := path.Base(exec)
+	fileSuffix := path.Ext(filenameWithSuffix)
+	filenameOnly := strings.TrimSuffix(filenameWithSuffix, fileSuffix)
+	filePath := fmt.Sprintf("./log/%s%s.log", filenameOnly, time.Now().Format("2006-01-02"))
+	log.Warning(filePath)
+	// 配置tail
+	config := tail.Config{
+		ReOpen:    true,                                 // 文件被截断后重新打开
+		Follow:    true,                                 // 跟随文件，监控新增内容
+		Location:  &tail.SeekInfo{Offset: 0, Whence: 2}, // 从文件末尾开始读取
+		MustExist: false,                                // 文件不存在不报错
+		Poll:      true,                                 // 使用轮询模式
+	}
+	// 使用tail.TailFile创建一个Tail对象
+	tails, err := tail.TailFile(filePath, config)
+	if err != nil {
+		log.Error(err)
+	}
+
+	for line := range tails.Lines {
+		err = conn.WriteMessage(websocket.TextMessage, []byte(line.Text))
+		if err != nil {
+			log.Fatal("Error sending message:", err)
+		}
+
+		_, message, err := conn.ReadMessage()
+		if err != nil {
+			log.Fatal("Error reading message:", err)
+		}
+		fmt.Println("Received:", string(message))
+	}
+
+}
+
 func (m *LogFormatter) Format(entry *log.Entry) ([]byte, error) {
 	var b *bytes.Buffer
 	if entry.Buffer != nil {
@@ -103,10 +154,6 @@ func (m *LogFormatter) Format(entry *log.Entry) ([]byte, error) {
 
 	b.WriteString(newLog)
 	return b.Bytes(), nil
-}
-
-func CreatFolders(folders []string) {
-	method.CreatFolders(folders)
 }
 
 func RotateLogs() *rotatelogs.RotateLogs {
@@ -154,7 +201,8 @@ func RotateLogs() *rotatelogs.RotateLogs {
 	log.Debug(define.Setting.ProgramVersion)
 	// 打开日志转发
 	go func() {
-		method.LiveServer()
+		LiveServer()
+
 	}()
 	return writer
 }

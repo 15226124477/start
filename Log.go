@@ -101,12 +101,14 @@ func SendLog() {
 	tails, err := tail.TailFile(filePath, config)
 	if err != nil {
 		log.Error(err)
+		return
 	}
 	u := "ws://172.16.32.244:1024/log"
 	log.Printf("连接到服务器 %s", u)
 	c, _, err := websocket.DefaultDialer.Dial(u, nil) //试连接到WebSocket服务器
 	if err != nil {
 		log.Error("失败:", err)
+		return
 	}
 	defer c.Close()
 	for line := range tails.Lines {
@@ -115,24 +117,16 @@ func SendLog() {
 			log.Error("向WebSocket服务端发送消息出错:", err)
 			return
 		}
-
 	}
+	// 关闭连接
+	c.Close()
 }
 
 func LiveServer() {
 
 	for {
-		log.Info("实时重连.....")
 		SendLog()
-		time.Sleep(time.Second * 10)
-		u := "ws://172.16.32.244:1024/log"
-		log.Printf("连接到服务器 %s", u)
-		c, _, err := websocket.DefaultDialer.Dial(u, nil) //试连接到WebSocket服务器
-		// 关闭连接
-		err = c.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
-		if err != nil {
-			log.Println("关闭输入:", err)
-		}
+		time.Sleep(time.Second * 30)
 	}
 
 }
@@ -161,7 +155,7 @@ func (m *LogFormatter) Format(entry *log.Entry) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-func RotateLogs() *rotatelogs.RotateLogs {
+func RotateLogs(isLive bool) *rotatelogs.RotateLogs {
 	log.SetReportCaller(true)
 	log.SetLevel(log.TraceLevel)
 	log.SetFormatter(&LogFormatter{})
@@ -205,9 +199,12 @@ func RotateLogs() *rotatelogs.RotateLogs {
 	log.Warning(exec, " \tProgram Running......")
 	log.Debug(define.Setting.ProgramVersion)
 	// 打开日志转发
-	go func() {
-		LiveServer()
+	if isLive {
+		go func() {
+			LiveServer()
 
-	}()
+		}()
+	}
+
 	return writer
 }

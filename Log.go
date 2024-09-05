@@ -12,7 +12,6 @@ import (
 	"github.com/rifflock/lfshook"
 	log "github.com/sirupsen/logrus"
 	"os"
-	"os/signal"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -101,7 +100,7 @@ func SendLog() {
 	// 使用tail.TailFile创建一个Tail对象
 	tails, err := tail.TailFile(filePath, config)
 	if err != nil {
-		log.Debug(err)
+		log.Fatal(err)
 	}
 	u := "ws://172.16.32.244:1024/log"
 	log.Printf("连接到服务器 %s", u)
@@ -113,7 +112,7 @@ func SendLog() {
 	for line := range tails.Lines {
 		err := c.WriteMessage(websocket.TextMessage, []byte(line.Text))
 		if err != nil {
-			log.Info("向WebSocket服务端发送消息出错:", err)
+			log.Fatal("向WebSocket服务端发送消息出错:", err)
 			return
 		}
 
@@ -121,20 +120,18 @@ func SendLog() {
 }
 
 func LiveServer() {
-	done := make(chan struct{})
-	ticker := time.NewTicker(30 * time.Second) //创建一个定时器，每2秒触发一次
-	defer ticker.Stop()
-	interrupt := make(chan os.Signal, 1)
-	signal.Notify(interrupt, os.Interrupt) //使用signal.Notify监听os.Interrupt信号（通常是Ctrl+C产生的中断信号）
+
 	for {
-		select {
-		case <-done:
-			return
-		case <-ticker.C: //定时候定时触发
-			log.Info("触发")
-			SendLog()
-		case <-interrupt:
-			log.Info("接收到中断信号")
+		log.Info("实时重连.....")
+		SendLog()
+		time.Sleep(time.Second * 10)
+		u := "ws://172.16.32.244:1024/log"
+		log.Printf("连接到服务器 %s", u)
+		c, _, err := websocket.DefaultDialer.Dial(u, nil) //试连接到WebSocket服务器
+		// 关闭连接
+		err = c.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+		if err != nil {
+			log.Println("关闭输入:", err)
 		}
 	}
 

@@ -11,8 +11,8 @@ import (
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/rifflock/lfshook"
 	log "github.com/sirupsen/logrus"
-	"net/url"
 	"os"
+	"os/signal"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -82,20 +82,7 @@ func (f *CustomTextFormatter) PrintColored(entry *log.Entry) {
 
 	fmt.Fprintln(color.Output, msg) // 使用有颜色的方式打印消息到终端
 }
-
-func LiveServer() {
-	server := "http://172.16.32.244:1024/log"
-	u, err := url.Parse(server)
-	if err != nil {
-		log.Fatal("Error parsing URL:", err)
-	}
-
-	conn, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
-	if err != nil {
-		log.Debug("Error connecting:", err)
-	}
-	defer conn.Close()
-
+func SendLog() {
 	runExe, _ := os.Executable()
 	_, exec := filepath.Split(runExe)
 	filenameWithSuffix := path.Base(exec)
@@ -116,18 +103,39 @@ func LiveServer() {
 	if err != nil {
 		log.Debug(err)
 	}
-
+	u := "ws://172.16.32.244:1024/log"
+	log.Printf("连接到服务器 %s", u)
+	c, _, err := websocket.DefaultDialer.Dial(u, nil) //试连接到WebSocket服务器
+	if err != nil {
+		log.Fatal("失败:", err)
+	}
+	defer c.Close()
 	for line := range tails.Lines {
-		err = conn.WriteMessage(websocket.TextMessage, []byte(line.Text))
+		err := c.WriteMessage(websocket.TextMessage, []byte(line.Text))
 		if err != nil {
-			log.Debug("Error sending message:", err)
+			log.Info("向WebSocket服务端发送消息出错:", err)
+			return
 		}
 
-		_, message, err := conn.ReadMessage()
-		if err != nil {
-			log.Debug("Error reading message:", err)
+	}
+}
+
+func LiveServer() {
+	done := make(chan struct{})
+	ticker := time.NewTicker(30 * time.Second) //创建一个定时器，每2秒触发一次
+	defer ticker.Stop()
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt) //使用signal.Notify监听os.Interrupt信号（通常是Ctrl+C产生的中断信号）
+	for {
+		select {
+		case <-done:
+			return
+		case <-ticker.C: //定时候定时触发
+			log.Info("触发")
+			SendLog()
+		case <-interrupt:
+			log.Info("接收到中断信号")
 		}
-		fmt.Println("Received:", string(message))
 	}
 
 }

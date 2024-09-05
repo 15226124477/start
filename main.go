@@ -65,6 +65,12 @@ func LiveServer() {
 func RotateLogs(mode int, isLive bool) *rotatelogs.RotateLogs {
 	log.SetReportCaller(true)
 	log.SetLevel(log.TraceLevel)
+	if mode == 0 {
+		log.SetFormatter(&Format.LogFormatter1{})
+	} else {
+		log.SetFormatter(&Format.LogFormatter2{})
+	}
+
 	log.SetFormatter(&CustomTextFormatter{
 		ForceColors:   true,
 		ColorDebug:    color.New(color.FgHiWhite),
@@ -92,7 +98,6 @@ func RotateLogs(mode int, isLive bool) *rotatelogs.RotateLogs {
 	log.SetOutput(writer)
 
 	if mode == 0 {
-		log.SetFormatter(&Format.LogFormatter1{})
 		lfsHook := lfshook.NewHook(lfshook.WriterMap{
 			log.DebugLevel: writer,
 			log.InfoLevel:  writer,
@@ -103,7 +108,6 @@ func RotateLogs(mode int, isLive bool) *rotatelogs.RotateLogs {
 		}, &Format.LogFormatter1{})
 		log.AddHook(lfsHook)
 	} else {
-		log.SetFormatter(&Format.LogFormatter2{})
 		lfsHook := lfshook.NewHook(lfshook.WriterMap{
 			log.DebugLevel: writer,
 			log.InfoLevel:  writer,

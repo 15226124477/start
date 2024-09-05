@@ -92,7 +92,7 @@ func LiveServer() {
 
 	conn, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
-		log.Fatal("Error connecting:", err)
+		log.Debug("Error connecting:", err)
 	}
 	defer conn.Close()
 
@@ -114,18 +114,18 @@ func LiveServer() {
 	// 使用tail.TailFile创建一个Tail对象
 	tails, err := tail.TailFile(filePath, config)
 	if err != nil {
-		log.Error(err)
+		log.Debug(err)
 	}
 
 	for line := range tails.Lines {
 		err = conn.WriteMessage(websocket.TextMessage, []byte(line.Text))
 		if err != nil {
-			log.Fatal("Error sending message:", err)
+			log.Debug("Error sending message:", err)
 		}
 
 		_, message, err := conn.ReadMessage()
 		if err != nil {
-			log.Fatal("Error reading message:", err)
+			log.Debug("Error reading message:", err)
 		}
 		fmt.Println("Received:", string(message))
 	}

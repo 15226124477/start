@@ -100,19 +100,19 @@ func SendLog() {
 	// 使用tail.TailFile创建一个Tail对象
 	tails, err := tail.TailFile(filePath, config)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 	}
 	u := "ws://172.16.32.244:1024/log"
 	log.Printf("连接到服务器 %s", u)
 	c, _, err := websocket.DefaultDialer.Dial(u, nil) //试连接到WebSocket服务器
 	if err != nil {
-		log.Fatal("失败:", err)
+		log.Error("失败:", err)
 	}
 	defer c.Close()
 	for line := range tails.Lines {
 		err := c.WriteMessage(websocket.TextMessage, []byte(line.Text))
 		if err != nil {
-			log.Fatal("向WebSocket服务端发送消息出错:", err)
+			log.Error("向WebSocket服务端发送消息出错:", err)
 			return
 		}
 

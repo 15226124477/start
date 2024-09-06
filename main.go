@@ -1,4 +1,4 @@
-package Setting
+package start
 
 import (
 	_ "embed"

@@ -67,18 +67,26 @@ func RotateLogs(mode int, isLive bool) *rotatelogs.RotateLogs {
 	log.SetLevel(log.TraceLevel)
 	if mode == 0 {
 		log.SetFormatter(&Format.LogFormatter1{})
+		log.SetFormatter(&CustomTextFormatter1{
+			ForceColors:   true,
+			ColorDebug:    color.New(color.FgHiWhite),
+			ColorInfo:     color.New(color.BgBlue, color.FgHiWhite),
+			ColorWarning:  color.New(color.BgMagenta, color.FgHiWhite),
+			ColorError:    color.New(color.BgRed, color.FgHiWhite),
+			ColorCritical: color.New(color.BgRed, color.FgHiWhite),
+		})
 	} else {
 		log.SetFormatter(&Format.LogFormatter2{})
+		log.SetFormatter(&CustomTextFormatter2{
+			ForceColors:   true,
+			ColorDebug:    color.New(color.FgHiWhite),
+			ColorInfo:     color.New(color.BgBlue, color.FgHiWhite),
+			ColorWarning:  color.New(color.BgMagenta, color.FgHiWhite),
+			ColorError:    color.New(color.BgRed, color.FgHiWhite),
+			ColorCritical: color.New(color.BgRed, color.FgHiWhite),
+		})
 	}
 
-	log.SetFormatter(&CustomTextFormatter{
-		ForceColors:   true,
-		ColorDebug:    color.New(color.FgHiWhite),
-		ColorInfo:     color.New(color.BgBlue, color.FgHiWhite),
-		ColorWarning:  color.New(color.BgMagenta, color.FgHiWhite),
-		ColorError:    color.New(color.BgRed, color.FgHiWhite),
-		ColorCritical: color.New(color.BgRed, color.FgHiWhite),
-	})
 	runExe, _ := os.Executable()
 	_, exec := filepath.Split(runExe)
 	ext := path.Ext(exec)

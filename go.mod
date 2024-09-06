@@ -1,6 +1,6 @@
 module github.com/15226124477/start
 
-go 1.22.0
+go 1.23.0
 
 require (
 	github.com/15226124477/define v0.0.0-20240904090259-ef1913ec436a

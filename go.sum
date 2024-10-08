@@ -1,5 +1,7 @@
 github.com/15226124477/define v0.0.0-20240904090259-ef1913ec436a h1:6Z9Pk1AahJDFvPNTzxPwXRiGFdBi+1Tq2EDstc5YvqI=
 github.com/15226124477/define v0.0.0-20240904090259-ef1913ec436a/go.mod h1:eWHClafAf49vElyhKijmUNBv9pkigvZUUsAYyi5fIVY=
+github.com/15226124477/define v0.0.0-20240909025856-c0c000fa0072 h1:KgKpUTGlUqi7z3e93ft7qa+9dwKSsZIxf6a3u2Eykbk=
+github.com/15226124477/define v0.0.0-20240909025856-c0c000fa0072/go.mod h1:rYklgG2cS9tZoBvLiYsTgiMsbUwTIf7v8s+2ZgCl2uU=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

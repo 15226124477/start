@@ -3,7 +3,7 @@ module github.com/15226124477/start
 go 1.23.0
 
 require (
-	github.com/15226124477/define v0.0.0-20240904090259-ef1913ec436a
+	github.com/15226124477/define v0.0.0-20240909025856-c0c000fa0072
 	github.com/fatih/color v1.17.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/hpcloud/tail v1.0.0
